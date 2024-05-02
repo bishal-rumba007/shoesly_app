@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 
 class AppColor{
-  static const Color primaryColor = Color(0xFFFF678B);
-  static const Color deepRed = Color(0xFFEB5757);
-  static const Color beige = Color(0xFFEACB8E);
-  static const Color fadedOrange = Color(0xFFFFC187);
-  static const Color cyanGreen = Color(0xFF8DE8C7);
-  static const Color lightBlue = Color(0xFF8DBCE8);
-  static const Color fadedBlue = Color(0xFFA8BAC5);
-  static const Color iconColor = Color(0xFF414141);
-  static const Color textColor = Color(0xFF242424);
+  static const Color primaryColor = Color(0xFF101010);
+  static const Color brandYellow = Color(0xFFFCD240);
+  static const Color grey100 = Color(0xFFF3F3F3);
+  static const Color grey200 = Color(0xFFE7E7E7);
+  static const Color grey300 = Color(0xFFB7B7B7);
+  static const Color grey400 = Color(0xFF6F6F6F);
+  static const Color errorRed = Color(0xFFFF4C5E);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color green = Color(0xFF648B8B);
+  static const Color blue = Color(0xFF2952CC);
 }
