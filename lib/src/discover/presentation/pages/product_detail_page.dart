@@ -1,19 +1,22 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shoesly_app/core/themes/theme_export.dart';
 import 'package:shoesly_app/core/widgets/build_button.dart';
-import 'package:shoesly_app/src/discover/domain/entities/shoe_entity.dart';
+import 'package:shoesly_app/core/widgets/build_cart_button.dart';
+import 'package:shoesly_app/src/cart/domain/model/cart_model.dart';
+import 'package:shoesly_app/src/cart/presentation/cubit/cart_cubit.dart';
+import 'package:shoesly_app/src/discover/domain/models/shoe_model.dart';
 import 'package:shoesly_app/src/discover/presentation/widgets/bottom_sheet_widget.dart';
 import 'package:shoesly_app/src/discover/presentation/widgets/indicator.dart';
 import 'package:shoesly_app/src/review/presentation/widgets/review_card.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key, required this.shoe});
-  final Shoe shoe;
+  final ShoeModel shoe;
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -27,24 +30,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedColorIndex = 0;
   int _selectedSizeIndex = 0;
 
-  Map<String, String> colors = {
-    "Black": "0xFF000000",
-    "Light Grey": "0xFFD3D3D3",
-    "Light Blue": "0xFFB0C4DE",
-    "Blue": "0xFF8A2BE2",
-  };
+  late Map<String, String> colors;
+
+  @override
+  void initState() {
+    colors = widget.shoe.colors;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: SvgPicture.asset("assets/icons/cart.svg"),
-            onPressed: () {
-              context.push('/cart');
-            },
-          ),
+        actions: const [
+         BuildCartIconButton()
         ],
       ),
       body: Padding(
@@ -55,7 +54,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             buildShoeContainer(context),
             SizedBox(height: 30.h,),
             Text(
-              "Jordan 1 Retro High Tie Dye",
+              widget.shoe.productName,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -76,14 +75,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 Row(
                   children: [
                     Text(
-                      '4.5',
+                      widget.shoe.averageRating,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '(1045 Reviews)',
+                      "(${widget.shoe.reviews.length} reviews)",
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w400,
                           color: Theme.of(context).colorScheme.onSurface
@@ -102,8 +101,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             SizedBox(height: 10.h,),
             Row(
-              children: List.generate(4, (index) {
-                return GestureDetector( // Wrap the Padding widget with GestureDetector to handle tap event
+              children: List.generate(widget.shoe.sizes.length, (index) {
+                return GestureDetector(
                   onTap: () {
                     setState(() {
                       _selectedSizeIndex = index; // Update the selected size index when a container is tapped
@@ -124,7 +123,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                       ),
                       child: Text(
-                        (index + 38).toString(),
+                        widget.shoe.sizes[index],
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: _selectedSizeIndex == index ? Colors.white : Colors.black, // Change the text color to white if the container is selected
@@ -144,14 +143,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             SizedBox(height: 10.h,),
             Text(
-              "Engineered to crush any movement-based workout, these On sneakers enhance the label's original Cloud sneaker with cutting edge technologies for a pair. ",
+              widget.shoe.description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColor.grey400,
               ),
             ),
             SizedBox(height: 30.h,),
             Text(
-              "Review (1045)",
+              "Review (${widget.shoe.reviews.length})",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -160,18 +159,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 1,
+              itemCount: widget.shoe.reviews.length >= 3 ? 3 : widget.shoe.reviews.length,
               itemBuilder: (context, index) {
-                return const ReviewCard();
+                return ReviewCard(
+                  reviewModel: widget.shoe.reviews[index],
+                );
               },
             ),
             SizedBox(height: 30.h,),
-            BuildOutlinedButton(
+            widget.shoe.reviews.length >= 3 ? BuildOutlinedButton(
               onPressed: (){
-                context.push('/review');
+                context.push('/review', extra: widget.shoe);
               },
               buttonWidget: Text("see all review".toUpperCase()),
-            ),
+            ) : const SizedBox(),
             SizedBox(height: 120.h,),
           ],
         ),
@@ -207,7 +208,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               itemCount: 3,
               itemBuilder: (context, index) {
                 return Hero(
-                  tag: widget.shoe.id,
+                  tag: widget.shoe.productId,
                   transitionOnUserGestures: true,
                   child: Image.asset(
                     "assets/shoes/jordan.png",
@@ -250,6 +251,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     child: Row(
                       children: List.generate(colors.length, (index) {
+                        bool isWhite = colors.values.toList()[index] == "0xFFFFFFFF";
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -264,16 +266,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 height: 18.w,
                                 width: 18.w,
                                 decoration: BoxDecoration(
-                                  color: Color(int.parse(colors.values
-                                      .toList()[index]
-                                      .replaceAll("#", "0xFF"))),
+                                  color: Color(int.parse(colors.values.toList()[index].replaceAll("#", "0xFF"))),
                                   shape: BoxShape.circle,
+                                  border: isWhite
+                                      ? Border.all(color: Colors.grey, width: 1.0)
+                                      : Border.all(color: Colors.transparent),
                                 ),
                               ),
                               if (_selectedColorIndex == index)
-                                const Icon(
+                                Icon(
                                   Icons.check,
-                                  color: Colors.white,
+                                  color: isWhite ? Colors.black : Colors.white,
                                   size: 15,
                                 ),
                             ],
@@ -356,8 +359,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       enableDrag: true,
       builder: (context) {
        return BottomSheetWidget(
+         shoeModel: widget.shoe,
           onAddToCart: (value) {
-            /// Todo: Add to cart logic here
+            final cartCubit = context.read<CartCubit>();
+            CartModel cartModel = CartModel(
+              shoe: widget.shoe,
+              selectedColor: colors.keys.toList()[_selectedColorIndex],
+              selectedSize: widget.shoe.sizes[_selectedSizeIndex],
+              totalPrice: double.parse(widget.shoe.price) * value,
+              quantity: value,
+            );
+            cartCubit.addCartItem(
+              cartModel
+            );
             Navigator.pop(context);
             showModalBottomSheet(
               context: context,

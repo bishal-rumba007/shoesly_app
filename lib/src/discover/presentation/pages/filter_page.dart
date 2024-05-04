@@ -50,7 +50,6 @@ class _FilterPageState extends State<FilterPage> {
           BrandFilter(
               selectedBrand: selectedBrand,
               onSelectBrand: (brand) {
-                print(brand);
                 setState(() {
                   selectedBrand = brand;
                 });
@@ -128,10 +127,10 @@ class _FilterPageState extends State<FilterPage> {
 
 class BrandFilter extends StatefulWidget {
   const BrandFilter({
-    Key? key,
+    super.key,
     required this.selectedBrand,
     required this.onSelectBrand,
-  }) : super(key: key);
+  });
 
   final String selectedBrand;
   final Function(String) onSelectBrand;

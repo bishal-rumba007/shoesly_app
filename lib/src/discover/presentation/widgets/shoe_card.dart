@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shoesly_app/src/discover/domain/entities/shoe_entity.dart';
+import 'package:shoesly_app/src/discover/domain/models/shoe_model.dart';
 
 
 class ShoeCard extends StatelessWidget {
-  final Shoe shoe;
+  final ShoeModel shoe;
 
   const ShoeCard({super.key, required this.shoe});
 
@@ -30,14 +30,19 @@ class ShoeCard extends StatelessWidget {
                   children: [
                     SvgPicture.asset("assets/icons/nike.svg"),
                     Hero(
-                      tag: shoe.id,
+                      tag: shoe.productId,
                       transitionOnUserGestures: true,
-                      child: Image.asset(
-                        "assets/shoes/jordan.png",
+                      child: shoe.imageUrl.isEmpty ? Image.asset(
+                         "assets/shoes/jordan.png",
                         height: 85.h,
                         width: 120.w,
                         fit: BoxFit.contain,
-                      ),
+                      ) : Image.network(
+                        shoe.imageUrl,
+                        height: 85.h,
+                        width: 120.w,
+                        fit: BoxFit.contain,
+                      )
                     ),
                   ],
                 ),
@@ -45,7 +50,7 @@ class ShoeCard extends StatelessWidget {
             ),
             SizedBox(height: 10.h,),
             Text(
-                shoe.name,
+                shoe.productName,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
@@ -61,14 +66,14 @@ class ShoeCard extends StatelessWidget {
                 ),
                 SizedBox(width: 4.w),
                 Text(
-                  '${shoe.rating}',
+                  shoe.averageRating,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '(${shoe.numReviews} reviews)',
+                  '(${shoe.reviews.length} reviews)',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w400,
                     color: Theme.of(context).colorScheme.onSurface
@@ -78,7 +83,7 @@ class ShoeCard extends StatelessWidget {
             ),
             SizedBox(height: 5.h),
             Text(
-                '\$${shoe.price.toStringAsFixed(2)}',
+                '\$${shoe.price}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

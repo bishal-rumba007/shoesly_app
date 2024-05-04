@@ -9,11 +9,10 @@ class BuildTabBar extends StatelessWidget {
   const BuildTabBar({
     super.key,
     required TabController tabController,
-    required this.brands,
+    required this.tabBarItems,
   }) : _tabController = tabController;
-
   final TabController _tabController;
-  final List<String> brands;
+  final List<String> tabBarItems;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +21,7 @@ class BuildTabBar extends StatelessWidget {
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
-        tabs: brands.map((brand) => Tab(text: brand)).toList(),
+        tabs: tabBarItems.map((brand) => Tab(text: brand)).toList(),
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide.none,
         ),

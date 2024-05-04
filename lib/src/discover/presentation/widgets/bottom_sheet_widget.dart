@@ -4,10 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shoesly_app/core/themes/theme_export.dart';
 import 'package:shoesly_app/core/widgets/build_button.dart';
+import 'package:shoesly_app/src/discover/domain/models/shoe_model.dart';
 
 class BottomSheetWidget extends StatefulWidget {
-  const BottomSheetWidget({super.key, required this.onAddToCart});
+  const BottomSheetWidget({super.key, required this.onAddToCart, required this.shoeModel});
   final Function(int) onAddToCart;
+  final ShoeModel shoeModel;
 
   @override
   State<BottomSheetWidget> createState() => _BottomSheetWidgetState();
@@ -111,27 +113,30 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Total Price',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: AppColor.grey300,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Price',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: AppColor.grey300,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 5.h,),
-                    Text(
-                      '\$235.00',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      SizedBox(height: 5.h,),
+                      Text(
+                        '\$${double.parse(widget.shoeModel.price) * _quantity}',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(width: 65.w,),
-                Expanded(
+                SizedBox(
+                  width: 167.w,
                   child: BuildButton(
                     onPressed: () {
                       widget.onAddToCart(_quantity);
@@ -233,7 +238,8 @@ class _SuccessBottomSheetState extends State<SuccessBottomSheet> {
               Expanded(
                 child: BuildButton(
                   onPressed: () {
-                    /// Todo: go to cart page
+                    Navigator.pop(context);
+                    context.push('/cart');
                   },
                   buttonWidget: Text("to cart".toUpperCase()),
                 ),

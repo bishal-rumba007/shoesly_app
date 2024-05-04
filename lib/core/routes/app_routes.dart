@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shoesly_app/src/cart/presentation/pages/cart_page.dart';
-import 'package:shoesly_app/src/discover/domain/entities/shoe_entity.dart';
+import 'package:shoesly_app/src/discover/domain/models/shoe_model.dart';
 import 'package:shoesly_app/src/discover/presentation/pages/discover_page.dart';
 import 'package:shoesly_app/src/discover/presentation/pages/filter_page.dart';
 import 'package:shoesly_app/src/discover/presentation/pages/product_detail_page.dart';
@@ -25,7 +25,7 @@ class AppRoutes {
       GoRoute(
         path: '/product-detail',
         pageBuilder: (context, state) {
-          final shoe = state.extra as Shoe;
+          final shoe = state.extra as ShoeModel;
           return MaterialPage(
             child: ProductDetailPage(shoe: shoe),
           );
@@ -48,8 +48,10 @@ class AppRoutes {
       ),
       GoRoute(
         path: '/review',
-        pageBuilder: (context, state) =>
-        const MaterialPage(child: ReviewPage()),
+        pageBuilder: (context, state) {
+          final shoeModel = state.extra as ShoeModel;
+          return MaterialPage(child: ReviewPage(shoeModel: shoeModel));
+        },
       ),
     ],
     errorPageBuilder: (context, state) => MaterialPage<void>(

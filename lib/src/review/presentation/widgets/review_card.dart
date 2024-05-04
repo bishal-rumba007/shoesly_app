@@ -4,9 +4,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shoesly_app/core/themes/theme_export.dart';
+import 'package:shoesly_app/src/review/domain/model/review_model.dart';
 
 class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
+  const ReviewCard({super.key, required this.reviewModel});
+  final ReviewModel reviewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class ReviewCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "John Doe",
+                      reviewModel.userName,
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -44,23 +46,41 @@ class ReviewCard extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h,),
                 Row(
-                  children: List.generate(5, (index) {
-                    return const Icon(
-                      Icons.star_rounded,
-                      color: AppColor.brandYellow,
-                      size: 16,
-                    );
-                  }),
+                  children: [
+                    Row(
+                      children: List.generate(
+                        reviewModel.rating.ceil(),
+                            (index) => const Icon(
+                          Icons.star_rate_rounded,
+                          color: AppColor.brandYellow,
+                        ),
+                      ),
+                    ),
+                    if (reviewModel.rating % 1 != 0)
+                      const Icon(
+                        Icons.star_half_rounded,
+                        color: AppColor.brandYellow,
+                      ),
+                    Row(
+                      children: List.generate(
+                        5 - reviewModel.rating.ceil(),
+                            (index) => const Icon(
+                          Icons.star_border_rounded,
+                          color: AppColor.grey300,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 10.h,),
                 Text(
-                  "Engineered to crush any movement-based workout, these On sneakers enhance the label's original Cloud sneaker with cutting edge technologies for a pair. ",
+                  reviewModel.review,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColor.grey400,
                     fontSize: 12.sp,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
