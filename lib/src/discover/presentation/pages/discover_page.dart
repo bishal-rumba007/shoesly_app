@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shoesly_app/src/discover/domain/entities/shoe_entity.dart';
 import 'package:shoesly_app/src/discover/presentation/widgets/build_tab_bar.dart';
 import 'package:shoesly_app/src/discover/presentation/widgets/shoe_card.dart';
@@ -24,21 +25,13 @@ class _DiscoverPageState extends State<DiscoverPage> with SingleTickerProviderSt
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Discover'),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-          color: Colors.black,
           fontSize: 30.sp,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Urbanist',
         ),
         actions: [
           Badge(
@@ -48,7 +41,7 @@ class _DiscoverPageState extends State<DiscoverPage> with SingleTickerProviderSt
             child: IconButton(
               icon: SvgPicture.asset("assets/icons/cart.svg"),
               onPressed: () {
-               /// Todo: Navigate to Cart page
+                context.push('/cart');
               },
             ),
           ),
@@ -93,7 +86,9 @@ class _DiscoverPageState extends State<DiscoverPage> with SingleTickerProviderSt
       floatingActionButton: SizedBox(
         height: 40.h,
         child: FloatingActionButton.extended(
-          onPressed: () {},
+          onPressed: () {
+            context.push('/filter');
+          },
           label: Row(
             children: [
               Badge(
@@ -111,6 +106,12 @@ class _DiscoverPageState extends State<DiscoverPage> with SingleTickerProviderSt
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }
 

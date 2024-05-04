@@ -2,12 +2,13 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shoesly_app/main/app.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(const MainApp());
+  await ScreenUtil.ensureScreenSize();
+  runApp(MainApp());
 }
 
 

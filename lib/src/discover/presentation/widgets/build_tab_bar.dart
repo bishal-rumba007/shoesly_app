@@ -28,11 +28,8 @@ class BuildTabBar extends StatelessWidget {
         ),
         tabAlignment: TabAlignment.start,
         dividerColor: Colors.transparent,
-        labelStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontSize: 16.sp,
+        labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).primaryColor,
-          fontFamily: 'Urbanist',
         ),
         unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
       ),
